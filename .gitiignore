@@ -1,4 +1,4 @@
 node_modules
-eslint.config.mjs
+babel.config.js
 package-lock.json
 package.json
