@@ -8,8 +8,3 @@ export function getFullResponseFromAPI(success) {
     });
 }
 
-// Usage
-getFullResponseFromAPI(true)  // Pass 'true' or 'false' to test both cases
-    .then(response => console.log(response))   // Logs the success response
-    .catch(error => console.log(error));       // Logs the error message
-
