@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import { uploadPhoto, createUser } from './utils.js';
 
 export function handleProfileSignup() {
