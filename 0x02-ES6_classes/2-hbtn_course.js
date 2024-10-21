@@ -23,7 +23,7 @@ export default class HolbertonCourse {
 
   set length(newLen) {
     if (typeof newLen !== 'number' || newLen <= 0) {
-      throw new Error('Must be a positive number');
+      throw new Error('Lenght must be a number');
     }
 
     this._length = newLen;
