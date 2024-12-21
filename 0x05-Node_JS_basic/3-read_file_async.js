@@ -5,7 +5,7 @@ async function countStudents(path) {
     const data = await fs.readFile(path, 'utf-8');
     const rows = data.trim().split('\n');
 
-    // const headers = rows.shift().split(',');
+    rows.shift().split(',');
 
     const students = rows.map((row) => row.split(',')).map((rows) => ({
       firstname: rows[0].trim(),
