@@ -61,7 +61,7 @@ const app = createServer(async (req, res) => {
 
     try {
       const result = await countStudents(argv[2]);
-      res.end(result); // Send the formatted result
+      res.end(result);
     } catch (error) {
       res.statusCode = 500;
       res.end(error.message);
