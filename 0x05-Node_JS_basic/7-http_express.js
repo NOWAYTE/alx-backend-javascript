@@ -39,12 +39,9 @@ async function countStudents(path) {
       result += `Number of students in ${field}: ${studentField.length}. List: ${studentField.join(', ')}\n`;
     });
 
-    console.log(result);
-
     return result;
   } catch (error) {
-    console.log(`Error reading file: ${error.message}`);
-    throw error;
+    throw new Error('Cannot load the database');
   }
 }
 
@@ -53,27 +50,23 @@ const homeRouter = express.Router();
 const studentsRouter = express.Router();
 
 homeRouter.get('/', (req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  console.log('Hello Holberton School!');
-  res.end();
+  res.status(200).send('Hello Holberton School!');
 });
 
 studentsRouter.get('/students', async (req, res) => {
-  console.log('This is the list of students');
   try {
-    const fieldCount = await countStudents(argv[2]);
-    res.status(200).send(fieldCount);
+    const result = await countStudents(argv[2]);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-app.use(homeRouter);
-app.use(studentsRouter);
+app.use('/', homeRouter);
+app.use('/', studentsRouter);
 
 app.listen(port, () => {
-  console.log('Server running');
+  console.log(`Server running at http://localhost:${port}`);
 });
 
 module.exports = app;
