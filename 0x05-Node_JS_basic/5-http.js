@@ -29,7 +29,7 @@ async function countStudents(path) {
       fieldCount[student.field].push(student.firstname);
     });
 
-    let result = `This is the list of our students\n`;
+    let result = 'This is the list of our students\n';
     result += `Number of students: ${totalStudents}\n`;
 
     Object.keys(fieldCount).forEach((field) => {
@@ -37,9 +37,9 @@ async function countStudents(path) {
       result += `Number of students in ${field}: ${studentField.length}. List: ${studentField.join(', ')}\n`;
     });
 
-    console.log(result); // Log the formatted result to console
+    console.log(result);
 
-    return result; // Return the formatted result
+    return result;
   } catch (error) {
     console.log(`Error reading file: ${error.message}`);
     throw error;
@@ -56,7 +56,7 @@ const app = createServer(async (req, res) => {
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain'); // Change to 'text/plain' for plain text response
+    res.setHeader('Content-Type', 'text/plain');
     console.log('This is the list of students');
 
     try {
@@ -64,7 +64,7 @@ const app = createServer(async (req, res) => {
       res.end(result); // Send the formatted result
     } catch (error) {
       res.statusCode = 500;
-      res.end(JSON.stringify({ error: error.message }));
+      res.end(error.message);
     }
   } else {
     res.statusCode = 404;
@@ -78,4 +78,3 @@ app.listen(port, hostname, () => {
 });
 
 module.exports = app;
-
