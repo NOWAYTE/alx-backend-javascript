@@ -16,6 +16,7 @@ function countStudents(path) {
         age: row[2].trim(),
         field: row[3].trim(),
       }));
+	  console.log(students)
 
     console.log(`Number of students: ${students.length}`);
 
