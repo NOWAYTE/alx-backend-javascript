@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 
-async function countStudents(path) {
+async function readDatabase(path) {
   try {
     const data = await fs.readFile(path, 'utf-8');
     const rows = data.trim().split('\n');
@@ -31,10 +31,10 @@ async function countStudents(path) {
         `Number of students in ${field}: ${studentField.length}. List: ${studentField.join(', ')}`,
       );
     });
-	console.log(fieldCount)
+	return fieldCount
   } catch (error) {
     console.log(`Error reading file: ${error.message}`);
   }
 }
 
-module.exports = countStudents;
+module.exports = readDatabase;

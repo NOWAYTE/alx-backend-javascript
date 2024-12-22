@@ -6,7 +6,7 @@ const { argv } = require('process');
 
 async function countStudents(path) {
   try {
-    const data = await fs.readFile(path, 'utf-8');
+    const data = await fs.readFile(path, 'utf-8')
     const rows = data.split('\n');
 
     rows.shift(); // Remove header row
