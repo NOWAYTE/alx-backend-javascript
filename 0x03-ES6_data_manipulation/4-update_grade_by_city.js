@@ -6,7 +6,7 @@ export default function updateStudentGradeByCity(arrayObjects, city, newGrades) 
 
       return {
         id: key.id,
-        name: key.name,
+        firstName: key.firstName,
         location: key.location,
         grade: gradesInfo ? gradesInfo.grade : 'N/A',
       };
