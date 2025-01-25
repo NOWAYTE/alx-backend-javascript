@@ -1,72 +1,39 @@
 const express = require('express');
+const { argv } = require('process');
+const fs = require('fs');
 
 const app = express();
-const fs = require('fs').promises;
-const { argv } = require('process');
 
-async function countStudents(path) {
-  try {
-    const data = await fs.readFile(path, 'utf-8')
-    const rows = data.split('\n');
+app.get('/', (req, res) => {
+  res.set('Content-Type', 'text/plain');
+  res.send('Hello Holberton School!');
+});
 
-    rows.shift(); // Remove header row
-
-    const students = rows
-      .filter((row) => row.trim().length > 0)
-      .map((row) => row.split(','))
-      .map((row) => ({
-        firstname: row[0],
-        lastname: row[1],
-        age: row[2],
-        field: row[3],
-      }));
-
-    const totalStudents = students.length;
-
-    const fieldCount = {};
-    students.forEach((student) => {
-      if (!fieldCount[student.field]) {
-        fieldCount[student.field] = [];
-      }
-      fieldCount[student.field].push(student.firstname);
+app.get('/students', (req, res) => {
+  res.set('Content-Type', 'text/plain');
+  res.write('This is the list of our students\n');
+  fs.readFile(argv[2], 'utf8', (err, data) => {
+    if (err) {
+      throw Error('Cannot load the database');
+    }
+    const result = [];
+    data.split('\n').forEach((data) => {
+      result.push(data.split(','));
     });
-
-    let result = 'This is the list of our students\n';
-    result += `Number of students: ${totalStudents}\n`;
-
-    Object.keys(fieldCount).forEach((field) => {
-      const studentField = fieldCount[field];
-      result += `Number of students in ${field}: ${studentField.length}. List: ${studentField.join(', ')}\n`;
-    });
-
-    return result;
-  } catch (error) {
-    throw new Error('Cannot load the database');
-  }
-}
-
-const port = 1245;
-const homeRouter = express.Router();
-const studentsRouter = express.Router();
-
-homeRouter.get('/', (req, res) => {
-  res.status(200).send('Hello Holberton School!');
+    result.shift();
+    const newis = [];
+    result.forEach((data) => newis.push([data[0], data[3]]));
+    const fields = new Set();
+    newis.forEach((item) => fields.add(item[1]));
+    const final = {};
+    fields.forEach((data) => { (final[data] = 0); });
+    newis.forEach((data) => { (final[data[1]] += 1); });
+    res.write(`Number of students: ${result.filter((check) => check.length > 3).length}\n`);
+    Object.keys(final).forEach((data) => res.write(`Number of students in ${data}: ${final[data]}. List: ${newis.filter((n) => n[1] === data).map((n) => n[0]).join(', ')}\n`));
+    res.end();
+  });
 });
 
-studentsRouter.get('/students', async (req, res) => {
-  try {
-    const result = await countStudents(argv[2]);
-    res.status(200).send(result);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-app.use('/', homeRouter);
-app.use('/', studentsRouter);
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+app.listen(1245);
 
 module.exports = app;

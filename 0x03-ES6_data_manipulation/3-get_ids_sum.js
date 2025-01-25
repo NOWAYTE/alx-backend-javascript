@@ -1,5 +1,5 @@
-export default function getStudentsIdsSum(arrayObjects) {
-  const array = arrayObjects.map((key) => key.id);
+import getListStudents from './0-get_list_students';
 
-  return array.reduce((acc, curr) => acc + curr);
+export default function getStudentIdsSum(student = getListStudents()) {
+  return student.reduce((current, next) => current + next.id, 0);
 }

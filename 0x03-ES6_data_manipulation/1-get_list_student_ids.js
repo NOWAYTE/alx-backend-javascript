@@ -1,5 +1,5 @@
-export default function getListStudentsIds(arrayObjects) {
-  if (!Array.isArray(arrayObjects)) return [];
-
-  return arrayObjects.map((key) => key.id);
+// eslint-disable-next-line consistent-return
+export default function getListStudentIds(arg) {
+  if (!Array.isArray(arg)) return [];
+  return arg.map((el) => el.id);
 }

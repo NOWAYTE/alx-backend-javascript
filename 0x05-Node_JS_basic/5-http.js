@@ -1,80 +1,57 @@
-const { createServer } = require('http');
-const fs = require('fs').promises;
+const http = require('http');
+const fs = require('fs');
 const { argv } = require('process');
 
-async function countStudents(path) {
-  try {
-    const data = await fs.readFile(path, 'utf-8');
-    const rows = data.split('\n');
-
-    rows.shift(); // Remove header row
-
-    const students = rows
-      .filter((row) => row.trim().length > 0)
-      .map((row) => row.split(','))
-      .map((row) => ({
-        firstname: row[0],
-        lastname: row[1],
-        age: row[2],
-        field: row[3],
-      }));
-
-    const totalStudents = students.length;
-
-    const fieldCount = {};
-    students.forEach((student) => {
-      if (!fieldCount[student.field]) {
-        fieldCount[student.field] = [];
+function countStudents(path, stream) {
+  if (fs.existsSync(path)) {
+    const data = fs.readFileSync(path, 'utf8');
+    const result = [];
+    data.split('\n').forEach((data) => {
+      result.push(data.split(','));
+    });
+    result.shift();
+    const newis = [];
+    result.forEach((data) => newis.push([data[0], data[3]]));
+    const fields = new Set();
+    newis.forEach((item) => fields.add(item[1]));
+    const final = {};
+    fields.forEach((data) => { (final[data] = 0); });
+    newis.forEach((data) => { (final[data[1]] += 1); });
+    stream.write(`Number of students: ${result.length}\n`);
+    const temp = [];
+    Object.keys(final).forEach((data) => temp.push(`Number of students in ${data}: ${final[data]}. List: ${newis.filter((n) => n[1] === data).map((n) => n[0]).join(', ')}\n`));
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < temp.length; i++) {
+      if (i === temp.length - 1) {
+        temp[i] = temp[i].replace(/(\r\n|\n|\r)/gm, '');
       }
-      fieldCount[student.field].push(student.firstname);
-    });
-
-    let result = 'This is the list of our students\n';
-    result += `Number of students: ${totalStudents}\n`;
-
-    Object.keys(fieldCount).forEach((field) => {
-      const studentField = fieldCount[field];
-      result += `Number of students in ${field}: ${studentField.length}. List: ${studentField.join(', ')}\n`;
-    });
-
-    console.log(result);
-
-    return result;
-  } catch (error) {
-    console.log(`Error reading file: ${error.message}`);
-    throw error;
-  }
+      stream.write(temp[i]);
+    }
+  } else { throw new Error('Cannot load the database'); }
 }
 
-const hostname = '127.0.0.1';
+const hostname = 'localhost';
 const port = 1245;
 
-const app = createServer(async (req, res) => {
-  if (req.url === '/') {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello Holberton School!');
-  } else if (req.url === '/students') {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    console.log('This is the list of students');
-
+const app = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  const { url } = req;
+  if (url === '/') {
+    res.write('Hello Holberton School!');
+    res.end();
+  }
+  if (url === '/students') {
+    res.write('This is the list of our students\n');
     try {
-      const result = await countStudents(argv[2]);
-      res.end(result);
-    } catch (error) {
-      res.statusCode = 500;
-      res.end(error.message);
+      countStudents(argv[2], res);
+      res.end();
+    } catch (err) {
+      res.end(err.message);
     }
-  } else {
-    res.statusCode = 404;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Not Found');
   }
 });
 
-app.listen(port, hostname, () => {
-  console.log('Server running');
-});
+app.listen(port, hostname);
 
 module.exports = app;

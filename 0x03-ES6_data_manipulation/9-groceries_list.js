@@ -1,5 +1,5 @@
 export default function groceriesList() {
-  const array = [
+  const arr = [
     ['Apples', 10],
     ['Tomatoes', 10],
     ['Pasta', 1],
@@ -7,9 +7,10 @@ export default function groceriesList() {
     ['Banana', 5],
   ];
 
-  const map = new Map();
-
-  array.forEach((value) => map.set(value[0], value[1]));
-
-  return map;
+  const mp = new Map();
+  // eslint-disable-next-line no-unused-vars
+  for (const el of arr) {
+    mp.set(el[0], el[1]);
+  }
+  return mp;
 }

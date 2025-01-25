@@ -1,40 +1,31 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 
 async function countStudents(path) {
-  try {
-    const data = await fs.readFile(path, 'utf-8');
-    const rows = data.trim().split('\n');
-
-    rows.shift().split(',');
-
-    const students = rows.map((row) => row.split(',')).map((rows) => ({
-      firstname: rows[0].trim(),
-      lastname: rows[1].trim(),
-      age: rows[2].trim(),
-      field: rows[3].trim(),
-    }));
-
-    console.log(`Number of students: ${students.length}`);
-
-    const fieldCount = {};
-
-    students.forEach((student) => {
-      if (!fieldCount[student.field]) {
-        fieldCount[student.field] = [];
-      }
-      fieldCount[student.field].push(student.firstname);
+  if (fs.existsSync(path)) {
+    return new Promise((resolve) => {
+      fs.readFile(path, 'utf8', (err, data) => {
+        if (err) {
+          throw Error('Cannot load the database');
+        }
+        const result = [];
+        data.split('\n').forEach((data) => {
+          result.push(data.split(','));
+        });
+        result.shift();
+        const newis = [];
+        result.forEach((data) => newis.push([data[0], data[3]]));
+        const fields = new Set();
+        newis.forEach((item) => fields.add(item[1]));
+        const final = {};
+        fields.forEach((data) => { (final[data] = 0); });
+        newis.forEach((data) => { (final[data[1]] += 1); });
+        console.log(`Number of students: ${result.filter((check) => check.length > 3).length}`);
+        Object.keys(final).forEach((data) => console.log(`Number of students in ${data}: ${final[data]}. List: ${newis.filter((n) => n[1] === data).map((n) => n[0]).join(', ')}`));
+        resolve(result, final, newis);
+      });
     });
-
-    Object.keys(fieldCount).forEach((field) => {
-      const studentField = fieldCount[field];
-      console.log(
-        `Number of students in ${field}: ${studentField.length}. List: ${studentField.join(', ')}`,
-      );
-    });
-	console.log(fieldCount)
-  } catch (error) {
-    console.log(`Error reading file: ${error.message}`);
   }
+  throw Error('Cannot load the database');
 }
 
 module.exports = countStudents;
